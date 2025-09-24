@@ -1,0 +1,386 @@
+const url = IMAGES[x.id] || saved || x.thumb || makeThumb(x.t, 210);<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Juegos de Persecución – El Lobo, el Monstruo</title>
+  <style>
+    :root{ --bg:#0b1530; --bg2:#1c2a4a; --ink:#e6f0ff; --neon:#22d3ee; --card:#142040; }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);overflow-x:hidden}
+    #fx{position:fixed;inset:0;z-index:0;display:block;pointer-events:none;background:linear-gradient(160deg,var(--bg),var(--bg2));}
+    #content{position:relative;z-index:1}
+    header{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center}
+    h1{font-size:clamp(2.2rem,6vw,4rem);margin:0;color:#7cf6ff;text-shadow:0 0 10px #00f5ff, 0 0 24px #00cfff}
+    h2{margin-top:10px;font-weight:400;color:#d0d8ff}
+    .btn{padding:12px 20px;border:none;border-radius:12px;font-weight:800;cursor:pointer;background:var(--neon);color:#081225;box-shadow:0 10px 24px rgba(0,0,0,.45), 0 0 24px #22d3ee44}
+    .grid{margin-top:34px;display:grid;grid-template-columns:repeat(2,minmax(200px,280px));gap:18px}
+    @media (min-width:880px){ .grid{grid-template-columns:repeat(4, minmax(160px, 220px));} }
+    .neon-card{position:relative;border-radius:16px;padding:18px 16px;background:#0f1c3a;border:1px solid #ffffff1a;cursor:pointer;text-decoration:none;color:var(--ink)}
+    .neon-card:hover{transform:translateY(-3px)}
+    .neon-card .title{font-weight:800}
+    section{padding:64px 20px;max-width:1000px;margin:auto}
+    .panel{margin-bottom:40px;padding:22px;background:var(--card);border-radius:14px;box-shadow:0 8px 18px rgba(0,0,0,.35);border:1px solid #ffffff1a}
+    .panel h3{margin-top:0;color:var(--neon)}
+
+    /* Ejemplos */
+    .examples{display:flex;flex-wrap:wrap;gap:20px;justify-content:center}
+    .example{flex:1 1 260px;max-width:280px;padding:14px;border:1px solid #ffffff22;border-radius:12px;background:#0f1c3a;cursor:pointer;transition:.3s}
+    .example:hover{background:#18264a}
+    .example img{width:100%;height:160px;object-fit:cover;border-radius:8px}
+
+    /* Modal */
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(4,10,24,.75);backdrop-filter:blur(4px);z-index:20}
+    .modal.show{display:flex}
+    .card-modal{width:min(960px,92vw);max-height:86vh;overflow:auto;background:#0f1c3a;border:1px solid #22d3ee55;border-radius:16px;box-shadow:0 20px 60px #0008;padding:16px}
+    .card-modal header{height:auto;align-items:flex-start}
+    .card-modal h3{margin:0 0 8px 0;color:#7cf6ff}
+    .card-modal img{width:100%;max-height:60vh;object-fit:contain;border-radius:10px;background:#081225}
+    .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:10px}
+    .back-top{display:inline-block;margin-top:14px;padding:10px 14px;border-radius:12px;background:#0f1c3a;border:1px solid #22d3ee55;color:#a8f5ff;text-decoration:none}
+  </style>
+  <script>
+    // Scroll suave disponible antes de usar en botones (evita el error de scope)
+    window.scrollToId = (id) => { const el = document.getElementById(id); if(el) el.scrollIntoView({behavior:'smooth'}); };
+    document.addEventListener('DOMContentLoaded',()=>{
+      document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',(e)=>{const id=a.getAttribute('href').slice(1);const tgt=document.getElementById(id);if(tgt){e.preventDefault();tgt.scrollIntoView({behavior:'smooth'});history.replaceState(null,'','#'+id);}}));
+    });
+  </script>
+</head>
+<body>
+  <noscript style="color:#fff;background:#b91c1c;padding:10px;display:block;text-align:center">Necesitas JavaScript habilitado para ver esta página.</noscript>
+  <canvas id="fx"></canvas>
+  <div id="content">
+  <header id="top">
+    <h1>Juegos de Persecución</h1>
+    <h2>El Lobo, el Monstruo</h2>
+    <button class="btn" onclick="scrollToId('fundamentos')">Comenzar</button>
+    <nav class="grid">
+      <a class="neon-card" href="#fundamentos"><div class="title">Fundamentos</div></a>
+      <a class="neon-card" href="#ejemplos"><div class="title">Ejemplos</div></a>
+      <a class="neon-card" href="#lobo"><div class="title">El Lobo / Monstruo</div></a>
+      <a class="neon-card" href="#conclusion"><div class="title">Conclusiones</div></a>
+    </nav>
+  </header>
+
+  <!-- 1) FUNDAMENTOS -->
+  <section id="fundamentos">
+    <div class="panel">
+      <h3>Fundamentos</h3>
+      <p>Tripleta básica: <b>perseguidor</b> (adulto/compañero confiable), <b>perseguido</b> (el niño) y <b>refugio</b> (cuerpo o lugar seguro). La amenaza es <i>ficcional</i> y requiere confianza.</p>
+    </div>
+  </section>
+
+  <!-- 2) EJEMPLOS (con grid existente: #exampleGrid) -->
+  <section id="ejemplos">
+    <div class="panel">
+      <h3>Ejemplos (toque para ampliar)</h3>
+      <div class="examples" id="exampleGrid"></div>
+    </div>
+  </section>
+
+  <!-- 3) EL LOBO / MONSTRUO -->
+  <section id="lobo">
+    <div class="panel">
+      <h3>El Lobo, el Monstruo</h3>
+      <p>Perseguir y escapar con ritmo, distancia y refugio. El que persigue se lentifica o suma obstáculos para sostener el juego y el cuidado del otro.</p>
+    </div>
+  </section>
+
+  <!-- 3.b) EJEMPLO GRÁFICO / SIMULACIÓN 3D (integrado) -->
+  <section id="lobo-escena">
+    <div class="panel">
+      <h3>Simulación 3D – Lobo / Monstruo</h3>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+        <button class="btn" id="btnStart3D">Iniciar 3D</button>
+        <button class="btn" id="btnStop3D" style="background:#a78bfa">Detener</button>
+      </div>
+      <div id="escena3dBox" style="width:100%;height:480px;background:#0b1020;border-radius:16px;overflow:hidden;border:1px solid #1f2a44"></div>
+      <p id="escena3dMsg" style="opacity:.8;font-size:.95rem;margin-top:8px"></p>
+    </div>
+  </section>
+
+  <!-- 4) CONCLUSIONES -->
+  <section id="conclusion">
+    <div class="panel">
+      <h3>Conclusiones</h3>
+      <ul style="margin:.2rem 0 0 1rem;line-height:1.6">
+        <li><b>Sentido pedagógico:</b> entrenan regulación del <i>ritmo</i> y la <i>distancia corporal</i>, anticipación motriz, lectura del otro y cuidado mutuo.</li>
+        <li><b>Condición esencial:</b> la amenaza es <i>ficcional</i> y sostenida por un adulto o par <i>confiable</i>. Sin confianza, no hay juego.</li>
+        <li><b>Regla de oro:</b> distancia anulada = el juego se detiene; refugio <i>siempre</i> disponible.</li>
+        <li><b>Progresión:</b> de fórmulas simples ("que te agarro…") → personajes (Lobo/Monstruo) → reglas explícitas (Mancha/Poliladrón) → mediadores (pelota).</li>
+        <li><b>Clima seguro:</b> acordar señales de inicio/pausa/cambio de rol; lentificar al perseguidor y proponer obstáculos antes que competir.</li>
+      </ul>
+      <a class="back-top" href="#top">⬆ Volver arriba</a>
+    </div>
+  </section>
+  </div>
+
+  <!-- Modal (usado por la sección de Ejemplos) -->
+  <div class="modal" id="modal">
+    <div class="card-modal">
+      <h3 id="mTitle">Título</h3>
+      <img id="mImg" alt="Ejemplo"/>
+      <p id="mDesc" style="opacity:.9;margin:.6rem 0 0"></p>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    'use strict';
+    // --------------- DATOS ----------------
+    const EXAMPLES = [
+      { id:'agarro', t:'Que te agarro, que te como', d:'Fórmula básica de persecución con refugio cercano.', thumb:'' },
+      { id:'mancha', t:'La Mancha', d:'Quien es tocado pasa a perseguir; reglas simples.', thumb:'' },
+      { id:'poliladron', t:'Poliladrón', d:'Equipos, cárcel y rescates.', thumb:'' },
+      { id:'quemado', t:'El Quemado', d:'Pelota mediadora y zonas permitidas.', thumb:'' },
+      { id:'pelota', t:'Juegos con pelota', d:'Defensa/ataque, territorio y arco-refugio.', thumb:'' }
+    ];
+    // Imágenes embebidas: podés reemplazar los thumbs llenando este objeto con data URIs
+    // Generador de imágenes embebidas (SVG inline, sin red)
+    const makeThumb = (label, hue)=>{
+      const svg = `<?xml version='1.0' encoding='UTF-8'?>
+<svg xmlns='http://www.w3.org/2000/svg' width='820' height='468' viewBox='0 0 820 468'>
+  <defs>
+    <linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+      <stop offset='0' stop-color='hsl(${hue},90%,25%)'/>
+      <stop offset='1' stop-color='hsl(${(hue+60)%360},90%,35%)'/>
+    </linearGradient>
+  </defs>
+  <rect width='100%' height='100%' fill='url(#g)'/>
+  <g fill='none' stroke='white' opacity='0.25'>
+    <circle cx='410' cy='234' r='180'/>
+    <circle cx='410' cy='234' r='130'/>
+    <circle cx='410' cy='234' r='80'/>
+  </g>
+  <text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle'
+        font-family='Segoe UI, Roboto, sans-serif' font-size='56'
+        fill='white' stroke='hsl(${hue},100%,60%)' stroke-width='1.5'>${label}</text>
+</svg>`;
+      return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+    };
+
+    // Imágenes embebidas para cada ejemplo (sin dependencias externas)
+    const IMAGES = {
+      agarro: makeThumb('Que te agarro…', 190),
+      mancha: makeThumb('La Mancha', 270),
+      poliladron: makeThumb('Poliladrón', 320),
+      quemado: makeThumb('El Quemado', 20),
+      pelota: makeThumb('Juegos con pelota', 140)
+    }; // { agarro:'data:image/...', mancha:'data:image/...', ... }
+
+    // --------------- RENDER GRID ----------------
+    const grid = document.getElementById('exampleGrid');
+    if(!grid){
+      console.error('[BUG] Falta #exampleGrid en el DOM');
+    } else {
+      EXAMPLES.forEach(x=>{
+        const saved = localStorage.getItem('img_'+x.id);
+        const url = saved || IMAGES[x.id] || x.thumb;
+        const div = document.createElement('div');
+        div.className='example';
+        div.innerHTML = `<h4 style="margin:0 0 6px 0">${x.t}</h4><img src="${url}" alt="${x.t}">`;
+        div.addEventListener('click',()=> openModal(x));
+        grid.appendChild(div);
+      });
+    }
+
+    // --------------- MODAL ----------------
+    const modal = document.getElementById('modal');
+    const mTitle = document.getElementById('mTitle');
+    const mImg = document.getElementById('mImg');
+    const mDesc = document.getElementById('mDesc');
+    function openModal(x){ mTitle.textContent=x.t; const saved=localStorage.getItem('img_'+x.id); mImg.src=saved||IMAGES[x.id]||x.thumb; mDesc.textContent=x.d; modal.classList.add('show'); }
+    function closeModal(){ modal.classList.remove('show'); }
+    modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
+
+    // --------------- TESTS (no tocar a menos que estén mal) ----------------
+    (function runSmokeTests(){
+      try{
+        console.assert(document.getElementById('exampleGrid'), '[TEST] Falta #exampleGrid');
+        console.assert(document.getElementById('modal'), '[TEST] Falta #modal');
+        console.assert(typeof openModal === 'function' && typeof closeModal === 'function', '[TEST] openModal/closeModal no están');
+        console.assert(Array.isArray(EXAMPLES) && EXAMPLES.length >= 5, '[TEST] Debe haber 5 ejemplos');
+        console.assert(grid && grid.children.length === EXAMPLES.length, '[TEST+] El grid debe renderizar 5 tarjetas');
+        // Asegurar que las imágenes de ejemplos son data URIs (sin http)
+        const imgsOk = [...grid.querySelectorAll('img')].every(img => /^data:image\//.test(img.src));
+        console.assert(imgsOk, '[TEST+] Las imágenes de ejemplos deben estar embebidas (data URI)');
+        // Nuevos tests para esta corrección
+        console.assert(![...document.scripts].some(s=>/\.tsx?$/.test(s.src)||/typescript/i.test(s.type)), '[TEST+] No debe referenciarse TypeScript (.ts/.tsx) en esta página');
+        console.assert(document.getElementById('btnStart3D') && document.getElementById('btnStop3D'), '[TEST+] Deben existir botones Iniciar/Detener 3D');
+        console.assert(document.getElementById('fx') instanceof HTMLCanvasElement, '[TEST+] Debe existir canvas de partículas (#fx)');
+        // Pruebas adicionales contra el error reportado
+        console.assert(!/index\.tsx/i.test(document.documentElement.outerHTML), '[TEST+] No debe existir referencia a index.tsx en el HTML');
+        console.assert(!/\bimport\s+React\b/.test(document.documentElement.outerHTML), '[TEST+] No debe haber código React ejecutable embebido');
+        console.assert(typeof window.scrollToId==='function', '[TEST+] scrollToId debe existir en el scope global');
+        console.assert(!!document.querySelector('a.back-top'), '[TEST+] Falta botón Volver arriba');
+      }catch(err){ console.error('[TEST] Error en tests:', err); }
+    })();
+  </script>
+
+  <script>
+    // Fondo de partículas (ligero)
+    (function(){
+      const c = document.getElementById('fx');
+      const ctx = c.getContext('2d');
+      let DPR = Math.min(2, window.devicePixelRatio||1), W=0,H=0, P=[];
+      function resize(){ DPR=Math.min(2,window.devicePixelRatio||1); W=c.width=innerWidth*DPR; H=c.height=innerHeight*DPR; c.style.width=innerWidth+'px'; c.style.height=innerHeight+'px'; if(!P.length){ for(let i=0;i<160;i++) P.push(seed()); } }
+      function seed(){ const a=Math.random()*6.283; const s=0.2+Math.random()*0.5; return {x:Math.random()*W,y:Math.random()*H,vx:Math.cos(a)*s,vy:Math.sin(a)*s,r:(0.7+Math.random()*1.5)*DPR,h:Math.random()<.5?188:270}; }
+      function step(){ ctx.clearRect(0,0,W,H); ctx.globalCompositeOperation='lighter'; for(const p of P){ p.x+=p.vx; p.y+=p.vy; if(p.x<-10)p.x=W+10;if(p.x>W+10)p.x=-10;if(p.y<-10)p.y=H+10;if(p.y>H+10)p.y=-10; ctx.beginPath(); ctx.shadowColor=`hsla(${p.h} 100% 60%/.7)`; ctx.shadowBlur=16*DPR; ctx.fillStyle=`hsla(${p.h} 100% 65%/.9)`; ctx.arc(p.x,p.y,p.r,0,6.283); ctx.fill(); } requestAnimationFrame(step); }
+      resize(); step(); addEventListener('resize',()=>{P.length=0;resize();});
+    })();
+  </script>
+
+  <script>
+    // ======= Escena 3D (versión vanilla, sin React/TS) =======
+    (function(){
+      var started=false, teardown=null;
+      var btnStart=document.getElementById('btnStart3D');
+      var btnStop=document.getElementById('btnStop3D');
+      var box=document.getElementById('escena3dBox');
+      var msg=document.getElementById('escena3dMsg');
+      if(!btnStart||!btnStop||!box){ return; }
+
+      function clamp(v,a,b){ return Math.min(b, Math.max(a,v)); }
+      function lerpAngle(a,b,t){ var d=(b-a+Math.PI)%(2*Math.PI)-Math.PI; return a+d*t; }
+      function setMsg(t){ if(msg) msg.textContent=t||''; }
+
+      function hasWebGL(){ try{ var canvas=document.createElement('canvas'); return !!(canvas.getContext('webgl')||canvas.getContext('experimental-webgl')); }catch(e){ return false; } }
+
+      async function loadTHREE(){
+        if(window.THREE) return window.THREE;
+        var urls=[
+          'https://cdn.jsdelivr.net/npm/three@0.159.0/build/three.min.js',
+          'https://unpkg.com/three@0.159.0/build/three.min.js'
+        ];
+        for(var i=0;i<urls.length;i++){
+          try{
+            await new Promise(function(res,rej){ var s=document.createElement('script'); s.src=urls[i]; s.crossOrigin='anonymous'; s.onload=function(){res(null)}; s.onerror=rej; document.head.appendChild(s); });
+            if(window.THREE) return window.THREE;
+          }catch(e){}
+        }
+        throw new Error('No se pudo cargar Three.js (sin red). Permite acceso y recarga para ver el 3D.');
+      }
+
+      async function start(){
+        if(started) return; started=true; setMsg('Inicializando…');
+        if(!hasWebGL()){ setMsg('⚠️ Este dispositivo no soporta WebGL.'); started=false; return; }
+        setMsg('Cargando Three.js…');
+        try{
+          var THREE=await loadTHREE(); setMsg('');
+          var scene=new THREE.Scene();
+          var W=box.clientWidth, H=480;
+          var camera=new THREE.PerspectiveCamera(52, W/H, 0.1, 100);
+          var target=new THREE.Vector3(0,0,0); var radius=12, theta=Math.PI/4, phi=Math.PI/2.7;
+          var renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+          renderer.setSize(W,H); box.appendChild(renderer.domElement);
+          if('outputColorSpace' in renderer){ renderer.outputColorSpace=THREE.SRGBColorSpace; } else { renderer.outputEncoding=THREE.sRGBEncoding; }
+          renderer.toneMapping=THREE.ACESFilmicToneMapping;
+
+          // Controles (drag + rueda)
+          var dragging=false, lastX=0, lastY=0;
+          function onDown(e){ dragging=true; lastX=e.clientX; lastY=e.clientY; }
+          function onUp(){ dragging=false; }
+          function onMove(e){ if(!dragging) return; var dx=e.clientX-lastX, dy=e.clientY-lastY; lastX=e.clientX; lastY=e.clientY; theta-=dx*0.005; phi=clamp(phi-dy*0.005,0.2,Math.PI-0.2); }
+          function onWheel(e){ radius=clamp(radius+e.deltaY*0.002,8,22); }
+          renderer.domElement.addEventListener('pointerdown', onDown);
+          window.addEventListener('pointerup', onUp);
+          window.addEventListener('pointermove', onMove);
+          renderer.domElement.addEventListener('wheel', onWheel, {passive:true});
+
+          // Luces y suelo
+          scene.add(new THREE.AmbientLight(0xffffff, .9));
+          var sun=new THREE.DirectionalLight(0xffffff,1); sun.position.set(6,10,6); scene.add(sun);
+          var ground=new THREE.Mesh(new THREE.PlaneGeometry(28,28), new THREE.MeshStandardMaterial({color:0x14532d, roughness:.95})); ground.rotation.x=-Math.PI/2; scene.add(ground);
+
+          // Vegetación
+          var bushMat=new THREE.MeshStandardMaterial({color:0x15803d, roughness:.8}); var bushCenters=[];
+          for(var i=0;i<7;i++){ var g=new THREE.Mesh(new THREE.SphereGeometry(0.6,14,14), bushMat); g.position.set((Math.random()-0.5)*16,0.3,(Math.random()-0.5)*16); scene.add(g); bushCenters.push({x:g.position.x, z:g.position.z}); }
+          var tree=new THREE.Group(); var trunk=new THREE.Mesh(new THREE.CylinderGeometry(0.25,0.3,2,10), new THREE.MeshStandardMaterial({color:0x8b5a2b})); trunk.position.y=1; tree.add(trunk); var crown=new THREE.Mesh(new THREE.SphereGeometry(1.5,16,16), new THREE.MeshStandardMaterial({color:0x166534})); crown.position.y=2.4; tree.add(crown); tree.position.set(-7,0,6); scene.add(tree); bushCenters.push({x:-7,z:6});
+
+          // Aro refugio
+          var refugeCircle=new THREE.Mesh(new THREE.RingGeometry(2.45,2.6,64), new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:0.6, side:THREE.DoubleSide})); refugeCircle.rotation.x=-Math.PI/2; refugeCircle.position.y=0.01; scene.add(refugeCircle);
+
+          // Modelos básicos
+          function makeAdult(){ var g=new THREE.Group(); var legGeo=new THREE.BoxGeometry(0.42,1.22,0.42); var pantM=new THREE.MeshStandardMaterial({color:0x4b5563}); var legL=new THREE.Mesh(legGeo,pantM); legL.position.set(-0.25,0.61,0); g.add(legL); var legR=legL.clone(); legR.position.x*=-1; g.add(legR); var shoeGeo=new THREE.BoxGeometry(0.46,0.18,0.55); var shoeM=new THREE.MeshStandardMaterial({color:0x1f2937, metalness:0.1, roughness:0.7}); var sL=new THREE.Mesh(shoeGeo,shoeM); sL.position.set(-0.25,0.09,0.05); g.add(sL); var sR=sL.clone(); sR.position.x*=-1; g.add(sR); var torso=new THREE.Mesh(new THREE.BoxGeometry(1.05,1.25,0.55), new THREE.MeshStandardMaterial({color:0x2563eb})); torso.position.y=1.65; g.add(torso); var belt=new THREE.Mesh(new THREE.BoxGeometry(1.06,0.12,0.56), new THREE.MeshStandardMaterial({color:0x111827})); belt.position.y=1.06; g.add(belt); var armGeo=new THREE.CylinderGeometry(0.18,0.18,1.05,12); var armM=new THREE.MeshStandardMaterial({color:0x2563eb}); var aL=new THREE.Mesh(armGeo,armM); aL.position.set(0.78,1.7,0); g.add(aL); var aR=aL.clone(); aR.position.x*=-1; g.add(aR); var handGeo=new THREE.SphereGeometry(0.2,14,14); var handM=new THREE.MeshStandardMaterial({color:0xf1c27d}); var hL=new THREE.Mesh(handGeo,handM); hL.position.set(0.78,1.2,0.15); g.add(hL); var hR=hL.clone(); hR.position.set(-0.78,1.2,0.15); g.add(hR); var neck=new THREE.Mesh(new THREE.CylinderGeometry(0.22,0.22,0.2,16), new THREE.MeshStandardMaterial({color:0xf1c27d})); neck.position.y=2.28; g.add(neck); var head=new THREE.Mesh(new THREE.CylinderGeometry(0.38,0.38,0.52,24), new THREE.MeshStandardMaterial({color:0xf1c27d})); head.position.y=2.6; g.add(head); var hair=new THREE.Mesh(new THREE.BoxGeometry(0.9,0.42,0.9), new THREE.MeshStandardMaterial({color:0x2d2d2d})); hair.position.y=2.92; g.add(hair); var eyeM=new THREE.MeshStandardMaterial({color:0x111827}); var eyeGeo=new THREE.SphereGeometry(0.05,8,8); var eL=new THREE.Mesh(eyeGeo,eyeM); eL.position.set(0.24,2.62,0.18); g.add(eL); var eR=eL.clone(); eR.position.x=0.12; g.add(eR); g.userData={aL:aL,aR:aR,legL:legL,legR:legR,vx:0,vz:0,goalX:0,goalZ:0,goalT:0}; return g; }
+          function makeWolf(){ var g=new THREE.Group(); var gray=0x6b7280, dark=0x374151; var body=new THREE.Mesh(new THREE.BoxGeometry(1.0,0.5,0.5), new THREE.MeshStandardMaterial({color:gray})); body.position.set(0,0.35,0); g.add(body); var head=new THREE.Mesh(new THREE.BoxGeometry(0.45,0.38,0.4), new THREE.MeshStandardMaterial({color:gray})); head.position.set(0.6,0.55,0); g.add(head); var snout=new THREE.Mesh(new THREE.BoxGeometry(0.25,0.18,0.22), new THREE.MeshStandardMaterial({color:0xe5e7eb})); snout.position.set(0.8,0.5,0); g.add(snout); var ear=new THREE.Mesh(new THREE.ConeGeometry(0.1,0.2,6), new THREE.MeshStandardMaterial({color:gray})); ear.position.set(0.4,0.8,0.15); ear.rotation.z=Math.PI; g.add(ear); var ear2=ear.clone(); ear2.position.z*=-1; g.add(ear2); var tail=new THREE.Mesh(new THREE.ConeGeometry(0.08,0.3,8), new THREE.MeshStandardMaterial({color:dark})); tail.position.set(-0.6,0.5,0); tail.rotation.z=-Math.PI/4; g.add(tail); var legG=new THREE.CylinderGeometry(0.06,0.06,0.4,10); var legM=new THREE.MeshStandardMaterial({color:dark}); [[-0.3,0.2,-0.2],[-0.3,0.2,0.2],[0.3,0.2,-0.2],[0.3,0.2,0.2]].forEach(function(arr){ var l=new THREE.Mesh(legG,legM); l.position.set(arr[0],arr[1],arr[2]); g.add(l); }); g.userData={vx:0,vz:0}; return g; }
+          function makeKid(ci,si){ var g=new THREE.Group(); g.position.y=0.02; var head=new THREE.Mesh(new THREE.BoxGeometry(0.25,0.3,0.25), new THREE.MeshStandardMaterial({color:ci})); head.position.set(0,0.55,0); g.add(head); var body=new THREE.Mesh(new THREE.BoxGeometry(0.3,0.5,0.2), new THREE.MeshStandardMaterial({color:si})); body.position.set(0,0.25,0); g.add(body); g.userData={vx:0,vz:0,state:'free',safeAngle:Math.random()*Math.PI*2,orbitPhase:Math.random()*Math.PI*2,cooldown:150+Math.floor(Math.random()*260),age:0,wanderAng:Math.random()*Math.PI*2}; return g; }
+
+          var adult=makeAdult(); scene.add(adult);
+          var wolf=makeWolf(); wolf.position.set(-6,0,0); scene.add(wolf);
+          var kids=[]; var shirts=[0x22d3ee,0xa78bfa,0xf97316,0xef4444,0x10b981,0xeab308,0xec4899,0x3b82f6]; var skins=[0xf1c27d,0xe0ac69,0xc68642,0x8d5524];
+          for(var i=0;i<8;i++){ var k=makeKid(skins[i%skins.length], shirts[i%shirts.length]); var r=6+Math.random()*3, ang=Math.random()*Math.PI*2; k.position.set(Math.cos(ang)*r,0,Math.sin(ang)*r); kids.push(k); scene.add(k); }
+
+          var bound=12, threatR=5.2, safeRadius=2.5; var speedKid=0.028, speedWolf=0.039; var minKidSep=1.1, minWolfKid=1.6;
+          function keepInside(p){ p.x=clamp(p.x,-bound,bound); p.z=clamp(p.z,-bound,bound); }
+          function separatePairs(a, minDist){ for(var i=0;i<a.length;i++) for(var j=i+1;j<a.length;j++){ var A=a[i],B=a[j]; var dx=A.position.x-B.position.x, dz=A.position.z-B.position.z; var d=Math.hypot(dx,dz); if(d<minDist && d>1e-4){ var push=(minDist-d)*0.5, nx=dx/d, nz=dz/d; A.position.x+=nx*push; A.position.z+=nz*push; B.position.x-=nx*push; B.position.z-=nz*push; } } }
+          function separateWolfFromKids(){ for(var i=0;i<kids.length;i++){ var k=kids[i]; var dx=k.position.x-wolf.position.x, dz=k.position.z-wolf.position.z, d=Math.hypot(dx,dz); if(d<minWolfKid && d>1e-4){ var push=(minWolfKid-d), nx=dx/d, nz=dz/d; k.position.x+=nx*push; k.position.z+=nz*push; wolf.position.x-=nx*push*0.5; wolf.position.z-=nz*push*0.5; } } }
+
+          function stepKids(){
+            for(var i=0;i<kids.length;i++){
+              var k=kids[i]; var vx=k.userData.vx||0, vz=k.userData.vz||0, p=k.position, state=k.userData.state;
+              if(state==='safe'){
+                var t=Date.now()*0.0015 + (k.userData.orbitPhase||0); var ang=(k.userData.safeAngle||0) + Math.sin(t)*0.15; var rad=(safeRadius-0.25) + Math.sin(t*0.7)*0.06; p.x = adult.position.x + Math.cos(ang)*rad; p.z = adult.position.z + Math.sin(ang)*rad; if(k.userData.cooldown>0){ k.userData.cooldown--; } else if(Math.random()<0.08){ k.userData.state='free'; k.userData.age=0; var dxOut=p.x-adult.position.x, dzOut=p.z-adult.position.z, dOut=Math.hypot(dxOut,dzOut)||1; k.userData.vx = (dxOut/dOut)*0.18 + (Math.random()-0.5)*0.05; k.userData.vz = (dzOut/dOut)*0.18 + (Math.random()-0.5)*0.05; k.userData.cooldown = 160+Math.floor(Math.random()*280); }
+                continue;
+              }
+              k.userData.age=(k.userData.age||0)+1; k.userData.wanderAng = (k.userData.wanderAng||0) + (Math.random()-0.5)*0.2; vx += Math.cos(k.userData.wanderAng)*0.012; vz += Math.sin(k.userData.wanderAng)*0.012; vx += (Math.random()-0.5)*0.003; vz += (Math.random()-0.5)*0.003; var dxW=p.x-wolf.position.x, dzW=p.z-wolf.position.z, dW=Math.hypot(dxW,dzW)||1; if(dW<threatR){ vx+=(dxW/dW)*0.03; vz+=(dzW/dW)*0.03; }
+              var dxA=p.x-adult.position.x, dzA=p.z-adult.position.z, dA=Math.hypot(dxA,dzA)||1; if(k.userData.age<180){ vx += (dxA/dA)*0.006; vz += (dzA/dA)*0.006; }
+              if(k.userData.age>150+Math.floor(Math.random()*70)){ var ax=adult.position.x-p.x, az=adult.position.z-p.z, al=Math.hypot(ax,az)||1; vx+=(ax/al)*0.014; vz+=(az/al)*0.014; }
+              vx*=0.95; vz*=0.95; var sp=Math.hypot(vx,vz)||1; if(sp>speedKid){ vx=vx/sp*speedKid; vz=vz/sp*speedKid; }
+              p.x+=vx; p.z+=vz; keepInside(p);
+              var dSafe=Math.hypot(p.x-adult.position.x,p.z-adult.position.z); if(dSafe<safeRadius){ k.userData.state='safe'; k.userData.vx=0; k.userData.vz=0; k.userData.age=0; k.userData.safeAngle=Math.random()*Math.PI*2; p.x=adult.position.x+Math.cos(k.userData.safeAngle)*(safeRadius-0.25); p.z=adult.position.z+Math.sin(k.userData.safeAngle)*(safeRadius-0.25); } else { k.userData.vx=vx; k.userData.vz=vz; }
+            }
+            separatePairs(kids,minKidSep); separateWolfFromKids();
+          }
+
+          function stepWolf(){
+            var tgt=null, far=-1; for(var i=0;i<kids.length;i++){ var k=kids[i]; if(k.userData.state==='free'){ var dFromAdult=Math.hypot(k.position.x-adult.position.x, k.position.z-adult.position.z); if(dFromAdult>far){ far=dFromAdult; tgt=k; } } }
+            var dvx=(Math.random()-0.5)*0.006, dvz=(Math.random()-0.5)*0.006; if(tgt){ var tx=tgt.position.x-wolf.position.x, tz=tgt.position.z-wolf.position.z, td=Math.hypot(tx,tz)||1; dvx+=tx/td*0.035; dvz+=tz/td*0.035; }
+            var cdx=wolf.position.x-adult.position.x, cdz=wolf.position.z-adult.position.z, cd=Math.hypot(cdx,cdz)||1, noGo=safeRadius+0.45; if(cd<noGo+1.0){ var nx=cdx/cd,nz=cdz/cd, rep=((noGo+1.0-cd)/1.0); dvx+=nx*0.05*rep; dvz+=nz*0.05*rep; }
+            var vx=wolf.userData.vx||0, vz=wolf.userData.vz||0; vx=vx*0.9+dvx; vz=vz*0.9+dvz; var sp=Math.hypot(vx,vz)||1; if(sp>speedWolf){ vx=vx/sp*speedWolf; vz=vz/sp*speedWolf; }
+            wolf.position.x+=vx; wolf.position.z+=vz; keepInside(wolf.position); wolf.userData.vx=vx; wolf.userData.vz=vz; wolf.rotation.y=lerpAngle(wolf.rotation.y,Math.atan2(vz,vx),0.25);
+            if(cd<noGo){ var nx2=cdx/cd,nz2=cdz/cd; wolf.position.x=adult.position.x+nx2*(noGo+0.02); wolf.position.z=adult.position.z+nz2*(noGo+0.02); wolf.userData.vx*=-0.5; wolf.userData.vz*=-0.5; }
+            for(var i=0;i<kids.length;i++){ var kk=kids[i]; var dxWK=kk.position.x-wolf.position.x, dzWK=kk.position.z-wolf.position.z, dWK=Math.hypot(dxWK,dzWK)||1; if(dWK<minWolfKid){ var push=(minWolfKid-dWK)+0.1; wolf.position.x-=(dxWK/dWK)*push; wolf.position.z-=(dzWK/dWK)*push; } }
+          }
+
+          function animateAdult(){ var ud=adult.userData, t=Date.now()*0.002; if(ud.aL&&ud.aR){ ud.aL.rotation.z=Math.sin(t)*0.45+Math.PI/6; ud.aR.rotation.z=-Math.sin(t)*0.45-Math.PI/6; } if(ud.legL&&ud.legR){ var bend=0.25+Math.sin(t*0.8)*0.22; ud.legL.rotation.x=bend; ud.legR.rotation.x=bend; } }
+          function stepAdult(){ var data=adult.userData; var vx=data.vx||0, vz=data.vz||0; data.goalT=(data.goalT||0)-1; function near(px,pz){ return Math.hypot(px-adult.position.x,pz-adult.position.z)<1.2; }
+            if(!data.goalT || data.goalT<=0 || near(data.goalX,data.goalZ)){ var gx=(Math.random()-0.5)*20, gz=(Math.random()-0.5)*20; data.goalX=gx; data.goalZ=gz; data.goalT=600; }
+            var gdx=data.goalX-adult.position.x, gdz=data.goalZ-adult.position.z, gd=Math.hypot(gdx,gdz)||1; vx += (gdx/gd)*0.01; vz += (gdz/gd)*0.01; vx += (Math.random()-0.5)*0.002; vz += (Math.random()-0.5)*0.002; for(var i=0;i<bushCenters.length;i++){ var b=bushCenters[i]; var dxB=adult.position.x-b.x, dzB=adult.position.z-b.z, dB=Math.hypot(dxB,dzB); if(dB<2.2){ var f=(2.2-dB)*0.02; vx+=(dxB/dB)*f; vz+=(dzB/dB)*f; } }
+            var sp=Math.hypot(vx,vz)||1, max=0.02; if(sp>max){ vx=vx/sp*max; vz=vz/sp*max; } adult.position.x+=vx; adult.position.z+=vz; refugeCircle.position.set(adult.position.x,0.01,adult.position.z); data.vx=vx; data.vz=vz; }
+
+          function updateCam(){ camera.position.set(target.x+radius*Math.sin(phi)*Math.cos(theta), target.y+radius*Math.cos(phi), target.z+radius*Math.sin(phi)*Math.sin(theta)); camera.lookAt(target); }
+          function onResize(){ var w=box.clientWidth, h=480; camera.aspect=w/h; camera.updateProjectionMatrix(); renderer.setSize(w,h); }
+
+          // Tests mínimos (se mantienen) + extras
+          console.assert(kids.length===8, '[TEST] Deben existir 8 niños');
+          console.assert(typeof stepKids==='function' && typeof stepWolf==='function', '[TEST] Steps definidos');
+          console.assert(renderer && renderer.domElement && renderer.domElement.parentElement===box, '[TEST+] Renderer montado en el contenedor');
+
+          var raf; function loop(){ raf=requestAnimationFrame(loop); stepKids(); stepWolf(); stepAdult(); animateAdult(); updateCam(); renderer.render(scene,camera); }
+          loop();
+
+          window.addEventListener('resize', onResize);
+          teardown=function(){ try{cancelAnimationFrame(raf)}catch(e){}
+            try{renderer.domElement.removeEventListener('pointerdown', onDown)}catch(e){}
+            try{window.removeEventListener('pointerup', onUp)}catch(e){}
+            try{window.removeEventListener('pointermove', onMove)}catch(e){}
+            try{renderer.domElement.removeEventListener('wheel', onWheel)}catch(e){}
+            try{window.removeEventListener('resize', onResize)}catch(e){}
+            try{renderer.dispose()}catch(e){}
+            try{renderer.domElement.remove()}catch(e){}
+          };
+        }catch(err){ setMsg(err && err.message ? err.message : String(err)); started=false; }
+      }
+
+      function stop(){ if(!started) return; started=false; setMsg(''); if(teardown) { try{teardown()}catch(e){} teardown=null; } }
+
+      btnStart.addEventListener('click', start);
+      btnStop.addEventListener('click', stop);
+    })();
+  </script>
+</body>
+</html>
