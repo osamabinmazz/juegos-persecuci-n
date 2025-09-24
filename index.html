@@ -4,10 +4,168 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Juegos de Persecución – El Lobo / Monstruo</title>
-  <!-- estilos y scripts aquí -->
+  <meta name="color-scheme" content="dark light">
+  <style>
+    :root{ --bg:#0b1530; --bg2:#1c2a4a; --ink:#e6f0ff; --neon:#22d3ee; --card:#142040 }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Segoe UI,Roboto,system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);overflow-x:hidden}
+    #fx{position:fixed;inset:0;z-index:0;display:block;pointer-events:none;background:linear-gradient(160deg,var(--bg),var(--bg2));}
+    #content{position:relative;z-index:1}
+    header{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:24px;text-align:center}
+    h1{font-size:clamp(2.2rem,6vw,4rem);margin:0;color:#7cf6ff;text-shadow:0 0 10px #00f5ff, 0 0 24px #00cfff}
+    h2{margin-top:10px;font-weight:400;color:#d0d8ff}
+    .btn{padding:12px 20px;border:none;border-radius:12px;font-weight:800;cursor:pointer;background:var(--neon);color:#081225;box-shadow:0 10px 24px rgba(0,0,0,.45), 0 0 24px #22d3ee44}
+    .grid{margin-top:34px;display:grid;grid-template-columns:repeat(2,minmax(200px,280px));gap:18px}
+    @media (min-width:880px){ .grid{grid-template-columns:repeat(4, minmax(160px, 220px));} }
+    .neon-card{position:relative;border-radius:16px;padding:18px 16px;background:#0f1c3a;border:1px solid #ffffff1a;cursor:pointer;text-decoration:none;color:var(--ink)}
+    .neon-card:hover{transform:translateY(-3px)}
+    .neon-card .title{font-weight:800}
+    section{padding:64px 20px;max-width:1000px;margin:auto}
+    .panel{margin-bottom:40px;padding:22px;background:var(--card);border-radius:14px;box-shadow:0 8px 18px rgba(0,0,0,.35);border:1px solid #ffffff1a}
+    .panel h3{margin-top:0;color:var(--neon)}
+
+    /* Ejemplos */
+    .examples{display:flex;flex-wrap:wrap;gap:20px;justify-content:center}
+    .example{flex:1 1 260px;max-width:280px;padding:14px;border:1px solid #ffffff22;border-radius:12px;background:#0f1c3a;cursor:pointer;transition:.3s}
+    .example:hover{background:#18264a}
+    .example img{width:100%;height:160px;object-fit:cover;border-radius:8px}
+
+    /* Modal */
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(4,10,24,.75);backdrop-filter:blur(4px);z-index:20}
+    .modal.show{display:flex}
+    .card-modal{width:min(960px,92vw);max-height:86vh;overflow:auto;background:#0f1c3a;border:1px solid #22d3ee55;border-radius:16px;box-shadow:0 20px 60px #0008;padding:16px}
+    .card-modal header{height:auto;align-items:flex-start}
+    .card-modal h3{margin:0 0 8px 0;color:#7cf6ff}
+    .card-modal img{width:100%;max-height:60vh;object-fit:contain;border-radius:10px;background:#081225}
+    .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:10px}
+    .back-top{display:inline-block;margin-top:14px;padding:10px 14px;border-radius:12px;background:#0f1c3a;border:1px solid #22d3ee55;color:#a8f5ff;text-decoration:none}
+    footer{text-align:center;padding:30px 16px;color:#9fb3ff6b}
+  </style>
+  <script>
+    // Scroll suave
+    window.scrollToId = (id) => { const el = document.getElementById(id); if(el) el.scrollIntoView({behavior:'smooth'}); };
+    document.addEventListener('DOMContentLoaded',()=>{
+      document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',(e)=>{const id=a.getAttribute('href').slice(1);const tgt=document.getElementById(id);if(tgt){e.preventDefault();tgt.scrollIntoView({behavior:'smooth'});history.replaceState(null,'','#'+id);}}));
+    });
+  </script>
 </head>
 <body>
-  <h1>Archivo listo</h1>
-  <p>Este es el index.html completo con los ejemplos y secciones.</p>
+  <canvas id="fx"></canvas>
+  <div id="content">
+  <header id="top">
+    <h1>Juegos de Persecución</h1>
+    <h2>El Lobo, el Monstruo</h2>
+    <button class="btn" onclick="scrollToId('fundamentos')">Comenzar</button>
+    <nav class="grid" aria-label="Navegación principal">
+      <a class="neon-card" href="#fundamentos"><div class="title">Fundamentos</div></a>
+      <a class="neon-card" href="#lobo"><div class="title">El Lobo / Monstruo</div></a>
+      <a class="neon-card" href="#ejemplos"><div class="title">Ejemplos</div></a>
+      <a class="neon-card" href="#conclusion"><div class="title">Conclusiones</div></a>
+    </nav>
+  </header>
+
+  <section id="fundamentos">
+    <div class="panel">
+      <h3>Fundamentos</h3>
+      <p>Tripleta básica: <b>perseguidor</b> (adulto o par confiable), <b>perseguido</b> (el niño) y <b>refugio</b> (cuerpo o lugar seguro). La amenaza es <em>ficcional</em> y requiere confianza.</p>
+      <ul>
+        <li><b>Regulación tónica y distancia corporal</b> como claves del jugar.</li>
+        <li>Señales claras para <em>iniciar/pausar/cambiar</em> rol.</li>
+        <li>El perseguidor se <em>lentifica</em> y propone obstáculos: el objetivo es <b>sostener el juego</b>, no “ganar”.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="lobo">
+    <div class="panel">
+      <h3>El Lobo, el Monstruo</h3>
+      <p>Variación clásica: “¡Que te agarro, que te como!”. El refugio puede ser el <b>cuerpo</b> del adulto o una <b>casa</b> acordada. Se alternan <b>perseguir</b> y <b>escapar</b>, cuidando la distancia.</p>
+    </div>
+  </section>
+
+  <section id="ejemplos">
+    <div class="panel">
+      <h3>Ejemplos (tocar para ampliar)</h3>
+      <div class="examples" id="exampleGrid" role="list"></div>
+    </div>
+  </section>
+
+  <section id="conclusion">
+    <div class="panel">
+      <h3>Conclusiones</h3>
+      <ul style="margin:.2rem 0 0 1rem;line-height:1.6">
+        <li><b>Sentido pedagógico:</b> entrenan regulación del <em>ritmo</em> y la <em>distancia corporal</em>, anticipación motriz, lectura del otro y cuidado mutuo.</li>
+        <li><b>Condición esencial:</b> amenaza <em>ficcional</em> sostenida por un adulto o par <em>confiable</em>. Sin confianza, no hay juego.</li>
+        <li><b>Regla de oro:</b> distancia anulada = detener; refugio <em>siempre</em> disponible.</li>
+        <li><b>Progresión:</b> fórmulas simples → personajes (Lobo/Monstruo) → reglas explícitas (Mancha/Poliladrón) → mediadores (pelota).</li>
+      </ul>
+      <a class="back-top" href="#top" aria-label="Volver arriba">⬆ Volver arriba</a>
+    </div>
+  </section>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="modal" aria-hidden="true" aria-labelledby="mTitle" role="dialog">
+    <div class="card-modal">
+      <h3 id="mTitle">Título</h3>
+      <img id="mImg" alt="Ejemplo ampliado"/>
+      <p id="mDesc" style="opacity:.9;margin:.6rem 0 0"></p>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    'use strict';
+    // Datos (imágenes embebidas en SVG para funcionar offline)
+    const EXAMPLES = [
+      { id:'agarro', t:'¡Que te agarro, que te como!', d:'Fórmula básica con refugio cercano.', thumb:'data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22560%22%20height%3D%22320%22%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%230f1c3a%22/%3E%0A%3Cg%20font-family%3D%22Segoe%20UI%2C%20Roboto%2C%20sans-serif%22%20text-anchor%3D%22middle%22%3E%0A%3Ctext%20x%3D%2250%25%22%20y%3D%2248%25%22%20font-size%3D%2228%22%20fill%3D%22%2322d3ee%22%20font-weight%3D%22700%22%3E%C2%A1Que%20te%20agarro%2C%20que%20te%20como%21%3C/text%3E%0A%3Ctext%20x%3D%2250%25%22%20y%3D%2262%25%22%20font-size%3D%2214%22%20fill%3D%22%23a8f5ff%22%3EJuegos%20de%20persecuci%C3%B3n%3C/text%3E%0A%3C/g%3E%0A%3C/svg%3E' },
+      { id:'mancha', t:'La Mancha', d:'Quien es tocado pasa a perseguir.', thumb:'data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22560%22%20height%3D%22320%22%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%230f1c3a%22/%3E%0A%3Cg%20font-family%3D%22Segoe%20UI%2C%20Roboto%2C%20sans-serif%22%20text-anchor%3D%22middle%22%3E%0A%3Ctext%20x%3D%2250%25%22%20y%3D%2248%25%22%20font-size%3D%2228%22%20fill%3D%22%2322d3ee%22%20font-weight%3D%22700%22%3ELa%20Mancha%3C/text%3E%0A%3Ctext%20x%3D%2250%25%22%20y%3D%2262%25%22%20font-size%3D%2214%22%20fill%3D%22%23a8f5ff%22%3EJuegos%20de%20persecuci%C3%B3n%3C/text%3E%0A%3C/g%3E%0A%3C/svg%3E' },
+      { id:'poliladron', t:'Poliladrón', d:'Equipos, cárcel y rescates.', thumb:'data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22560%22%20height%3D%22320%22%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%230f1c3a%22/%3E%0A%3Cg%20font-family%3D%22Segoe%20UI%2C%20Roboto%2C%20sans-serif%22%20text-anchor%3D%22middle%22%3E%0A%3Ctext%20x%3D%2250%25%22%20y%3D%2248%25%22%20font-size%3D%2228%22%20fill%3D%22%2322d3ee%22%20font-weight%3D%22700%22%3EPoliladr%C3%B3n%3C/text%3E%0A%3Ctext%20x%3D%2250%25%22%20y%3D%2262%25%22%20font-size%3D%2214%22%20fill%3D%22%23a8f5ff%22%3EJuegos%20de%20persecuci%C3%B3n%3C/text%3E%0A%3C/g%3E%0A%3C/svg%3E' },
+      { id:'quemado', t:'El Quemado', d:'Pelota mediadora y zonas permitidas.', thumb:'data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22560%22%20height%3D%22320%22%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%230f1c3a%22/%3E%0A%3Cg%20font-family%3D%22Segoe%20UI%2C%20Roboto%2C%20sans-serif%22%20text-anchor%3D%22middle%22%3E%0A%3Ctext%20x%3D%2250%25%22%20y%3D%2248%25%22%20font-size%3D%2228%22%20fill%3D%22%2322d3ee%22%20font-weight%3D%22700%22%3EEl%20Quemado%3C/text%3E%0A%3Ctext%20x%3D%2250%25%22%20y%3D%2262%25%22%20font-size%3D%2214%22%20fill%3D%22%23a8f5ff%22%3EJuegos%20de%20persecuci%C3%B3n%3C/text%3E%0A%3C/g%3E%0A%3C/svg%3E' },
+      { id:'pelota', t:'Juegos con pelota', d:'Defensa/ataque, territorio y arco-refugio.', thumb:'data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22560%22%20height%3D%22320%22%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%230f1c3a%22/%3E%0A%3Cg%20font-family%3D%22Segoe%20UI%2C%20Roboto%2C%20sans-serif%22%20text-anchor%3D%22middle%22%3E%0A%3Ctext%20x%3D%2250%25%22%20y%3D%2248%25%22%20font-size%3D%2228%22%20fill%3D%22%2322d3ee%22%20font-weight%3D%22700%22%3EJuegos%20con%20pelota%3C/text%3E%0A%3Ctext%20x%3D%2250%25%22%20y%3D%2262%25%22%20font-size%3D%2214%22%20fill%3D%22%23a8f5ff%22%3EJuegos%20de%20persecuci%C3%B3n%3C/text%3E%0A%3C/g%3E%0A%3C/svg%3E' }
+    ];
+
+    const grid = document.getElementById('exampleGrid');
+    EXAMPLES.forEach(x=>{
+      const div = document.createElement('div');
+      div.className='example'; div.setAttribute('role','listitem');
+      div.innerHTML = `<h4 style="margin:0 0 6px 0">${x.t}</h4><img src="${x.thumb}" alt="${x.t}">`;
+      div.addEventListener('click',()=> openModal(x));
+      grid.appendChild(div);
+    });
+
+    // Modal
+    const modal = document.getElementById('modal');
+    const mTitle = document.getElementById('mTitle');
+    const mImg = document.getElementById('mImg');
+    const mDesc = document.getElementById('mDesc');
+    function openModal(x){ mTitle.textContent=x.t; mImg.src=x.thumb; mDesc.textContent=x.d; modal.classList.add('show'); modal.setAttribute('aria-hidden','false'); }
+    function closeModal(){ modal.classList.remove('show'); modal.setAttribute('aria-hidden','true'); }
+    modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
+
+    // Tests rápidos
+    (function(){ 
+      console.assert(document.getElementById('exampleGrid'), '[TEST] Falta #exampleGrid');
+      console.assert(Array.isArray(EXAMPLES) && EXAMPLES.length>=5, '[TEST] Debe haber 5 ejemplos');
+      console.assert(typeof openModal==='function' && typeof closeModal==='function', '[TEST] Modal API');
+    })();
+  </script>
+
+  <script>
+    // Fondo de partículas
+    (function(){
+      const c = document.getElementById('fx');
+      const ctx = c.getContext('2d');
+      let DPR = Math.min(2, window.devicePixelRatio||1), W=0,H=0, P=[];
+      function resize(){ DPR=Math.min(2,window.devicePixelRatio||1); W=c.width=innerWidth*DPR; H=c.height=innerHeight*DPR; c.style.width=innerWidth+'px'; c.style.height=innerHeight+'px'; if(!P.length){ for(let i=0;i<160;i++) P.push(seed()); } }
+      function seed(){ const a=Math.random()*6.283; const s=0.2+Math.random()*0.5; return {x:Math.random()*W,y:Math.random()*H,vx:Math.cos(a)*s,vy:Math.sin(a)*s,r:(0.7+Math.random()*1.5)*DPR,h:Math.random()<.5?188:270}; }
+      function step(){ ctx.clearRect(0,0,W,H); ctx.globalCompositeOperation='lighter'; for(const p of P){ p.x+=p.vx; p.y+=p.vy; if(p.x<-10)p.x=W+10;if(p.x>W+10)p.x=-10;if(p.y<-10)p.y=H+10;if(p.y>H+10)p.y=-10; ctx.beginPath(); ctx.shadowColor=`hsla(${p.h} 100% 60%/.7)`; ctx.shadowBlur=16*DPR; ctx.fillStyle=`hsla(${p.h} 100% 65%/.9)`; ctx.arc(p.x,p.y,p.r,0,6.283); ctx.fill(); } requestAnimationFrame(step); }
+      resize(); step(); addEventListener('resize',()=>{P.length=0;resize();});
+    })();
+  </script>
+  <footer>© 2025 Juegos de Persecución</footer>
 </body>
 </html>
